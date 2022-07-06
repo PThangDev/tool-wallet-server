@@ -37,14 +37,13 @@ const walletController = {
   async updateAmounts(req: Request, res: Response, next: NextFunction) {
     try {
       const wallets = req.body;
-      const walletsUpdated = [];
+      const walletsUpdated: any[] = [];
+      const walletAddresses = wallets.map((wal: { address: string }) => wal.address);
+
+      const walletsChoose = await walletModel.find({ address: { $in: walletAddresses } });
 
       for (let i = 0; i < wallets.length; i++) {
-        const walletUpdate = await walletModel.updateOne(
-          { address: wallets[i].address },
-          { amount: wallets[i].amount },
-          { new: true }
-        );
+        const walletUpdate = await walletModel.updateOne({ address: wallets[i].address }, { new: true });
         walletsUpdated.push(walletUpdate);
       }
 
